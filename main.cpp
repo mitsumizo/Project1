@@ -44,7 +44,7 @@ public:
     SparseRow* getMyMatrix();
     void setSparseRow(int, int, int, int);
     void sorted();
-    bool existMymatrix(SparseRow* M, int row, int col);
+    int detectValue(int row, int col);
 };
 
 SparseRow::SparseRow()
@@ -241,14 +241,24 @@ SparseMatrix* SparseMatrix::Add(SparseMatrix &M)
 
 }
 
-bool SparseMatrix::existMymatrix(SparseRow* M, int row, int col)
+int SparseMatrix::detectValue(int row, int col)
 {
-    
-}
+    for(int i = 0; i < getNoNSV(); i++)
+    {
+        if(getMyMatrix()[i].getRow() == row && getMyMatrix()[i].getCol() == col)
+        {
+            return getMyMatrix()[i].getValue();
+        }
+    }
 
+    return -1;
+}
 SparseMatrix* SparseMatrix::Multiply(SparseMatrix &M) {
 
-    int sum = 0;
+    SparseMatrix* Multiplied = new SparseMatrix(getRow(), getCol(), getCV(), getRow() * getCol());
+
+    int count = 0;
+    int sum;
     int aval;
     int bval;
 
@@ -256,15 +266,27 @@ SparseMatrix* SparseMatrix::Multiply(SparseMatrix &M) {
     {
         for(int j = 0; j < M.getCol(); j++)
         {
+            sum = 0;
             for(int k = 0; k < getRow(); k++)
             {
-                if(existMymatrix(getMyMatrix(), i, k) && existMymatrix(M.getMyMatrix(), k, j))
+                aval = detectValue(i, k);
+                bval = M.detectValue(k, j);
+
+                if(aval != -1 && bval != -1)
                 {
-                    aval = getMyMatrix()[]
+                   sum += aval * bval;
                 }
+            }
+            if(sum != getCV())
+            {
+                Multiplied->setSparseRow(i, j, sum, count++);
             }
         }
     }
+
+    (*Multiplied).sorted();
+
+    return Multiplied;
 
 }
 
@@ -366,9 +388,9 @@ int main()
     temp = (*secondOne).Transpose();
     (*temp).displayMatrix();
 
-//    cout << "multiplication of matrices in sparse matrix form: " << endl;
-//    temp = (*secondOne).Multiply(*firstOne);
-//    (*temp).display();
+    cout << "multiplication of matrices in sparse matrix form: " << endl;
+    temp = (*firstOne).Multiply(*secondOne);
+    (*temp).displayMatrix();
 
     cout << "addition of matrices in sparse matrix form: " << endl;
     temp = (*secondOne).Add(*firstOne);
