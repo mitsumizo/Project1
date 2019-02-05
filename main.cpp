@@ -36,11 +36,6 @@ public:
     void display();
     void displayMatrix();
 
-    int getRow();
-    int getCol();
-    int getCV();
-    int getNoNSV();
-    SparseRow* getMyMatrix();
     void setSparseRow(int r, int c, int val, int count);
     void sorted();
     int detectValue(int row, int col);
@@ -113,31 +108,6 @@ SparseMatrix::SparseMatrix (int n, int m, int cv, int noNSV)
     myMatrix = new SparseRow[noNSV];
 }
 
-int SparseMatrix::getRow()
-{
-    return noRows;
-}
-
-int SparseMatrix::getCol()
-{
-    return noCols;
-}
-
-int SparseMatrix::getCV()
-{
-    return commonValue;
-}
-
-int SparseMatrix::getNoNSV()
-{
-    return noNonSparseValues;
-}
-
-SparseRow* SparseMatrix::getMyMatrix()
-{
-    return myMatrix;
-}
-
 void SparseMatrix::setSparseRow(int row , int col , int value, int count)
 {
     myMatrix[count].setSparseRow(row, col, value); // insert the SparseRow into the myMatrix by count
@@ -157,9 +127,9 @@ void SparseMatrix::display()
 void SparseMatrix::displayMatrix()
 {
     int count = 0;
-    while(myMatrix[count].getRow() < 0)
+    while(myMatrix[count++].getRow() < 0)
     {
-        count++;
+
     }
     for(int i = 0; i < noRows; i++)
     {
@@ -195,6 +165,11 @@ SparseMatrix* SparseMatrix::Transpose()
 
 SparseMatrix* SparseMatrix::Add(SparseMatrix &M)
 {
+
+    if(noRows != M.noRows || noCols != M.noCols)
+    {
+        return NULL;
+    }
     SparseMatrix* added = new SparseMatrix(noRows, noCols, commonValue, noNonSparseValues + M.noNonSparseValues);
 
     int currentSize = 0;
@@ -262,7 +237,11 @@ int SparseMatrix::detectValue(int row, int col)
 
 SparseMatrix* SparseMatrix::Multiply(SparseMatrix &M) {
 
-    SparseMatrix* Multiplied = new SparseMatrix(noRows, noCols, commonValue, noRows * noCols);
+    if(noCols != M.noRows)
+    {
+        return NULL;
+    }
+    SparseMatrix* Multiplied = new SparseMatrix(noRows, M.noCols, commonValue, noRows * M.noCols);
 
     int count = 0;
     int sum;
@@ -368,8 +347,6 @@ int main()
         }
     }
 
-    cout << endl;
-
     cout << "First one in sparse matrix format " << endl;
     (*firstOne).display();
 
@@ -392,11 +369,21 @@ int main()
 
     cout << "multiplication of matrices in sparse matrix form: " << endl;
     temp = (*secondOne).Multiply(*firstOne);
-    (*temp).display();
+    if(temp == NULL)
+    {
+        cout << "Error: cannot multiple" << endl;
+    }
+    else
+        (*temp).displayMatrix();
 
     cout << "addition of matrices in sparse matrix form: " << endl;
     temp = (*secondOne).Add(*firstOne);
-    (*temp).display();
+    if(temp == NULL)
+    {
+        cout << "Error: cannot add" << endl;
+    }
+    else
+        (*temp).displayMatrix();
 
     return 0;
 }
