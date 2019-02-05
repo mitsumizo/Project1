@@ -127,9 +127,9 @@ void SparseMatrix::display()
 void SparseMatrix::displayMatrix()
 {
     int count = 0;
-    while(myMatrix[count++].getRow() < 0)
+    while(myMatrix[count].getRow() < 0)
     {
-
+        count++;
     }
     for(int i = 0; i < noRows; i++)
     {
@@ -371,19 +371,19 @@ int main()
     temp = (*secondOne).Multiply(*firstOne);
     if(temp == NULL)
     {
-        cout << "Error: cannot multiple" << endl;
+        cout << "Error: cannot multiple because of invalid size" << endl;
     }
     else
-        (*temp).displayMatrix();
+        (*temp).display();
 
     cout << "addition of matrices in sparse matrix form: " << endl;
     temp = (*secondOne).Add(*firstOne);
     if(temp == NULL)
     {
-        cout << "Error: cannot add" << endl;
+        cout << "Error: cannot add because of invalid size" << endl;
     }
     else
-        (*temp).displayMatrix();
+        (*temp).display();
 
     return 0;
 }
